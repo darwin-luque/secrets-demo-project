@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const ejs = require('ejs');
@@ -26,9 +27,7 @@ const userSchema = new mongoose.Schema({
     }
 });
 
-// 
-const secret = 'Thisisoutlittlesecret.';
-userSchema.plugin(encrypt, {secret: secret, encryptedFields: ['password']});
+userSchema.plugin(encrypt, {secret: process.env.SECRET, encryptedFields: ['password']});
 
 // Create indiviual documents of the User DB in a collection name users, pass the singular user
 const User = mongoose.model('user', userSchema);
@@ -77,5 +76,5 @@ app.post('/login', (req, res) => {
 
 const port = 5050;
 app.listen(port, () => {
-    console.log(`Server starte in port ${port}`);
+    console.log(`Server started in port ${port}`);
 })
