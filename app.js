@@ -3,7 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const ejs = require('ejs');
 const mongoose = require('mongoose');
-const encrypt = require('mongoose-encryption');
+const md5 = require('md5')
 
 // Set server parameters
 const app = express();
@@ -27,7 +27,6 @@ const userSchema = new mongoose.Schema({
     }
 });
 
-userSchema.plugin(encrypt, {secret: process.env.SECRET, encryptedFields: ['password']});
 
 // Create indiviual documents of the User DB in a collection name users, pass the singular user
 const User = mongoose.model('user', userSchema);
@@ -49,7 +48,7 @@ app.get('/register', (req, res) => {
 app.post('/register', (req, res) => {
     const newUser = new User({
         email: req.body.username,
-        password: req.body.password
+        password: md5(req.body.password)
     });
 
     newUser.save(err => {
@@ -66,7 +65,7 @@ app.post('/login', (req, res) => {
         if (err) { console.log(err); }
         else {
             if (foundUser) {
-                if (foundUser.password === req.body.password) {
+                if (foundUser.password === md5(req.body.password)) {
                     res.render('secrets');
                 }
             }
